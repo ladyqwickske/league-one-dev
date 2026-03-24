@@ -715,11 +715,11 @@
     function loadPointTargets() {
       if (pointTargetsCache) return pointTargetsCache;
       try {
-        const raw = JSON.parse(localStorage.getItem(PT_KEY) || '{"default":15000,"overrides":[]}');
+        const raw = JSON.parse(localStorage.getItem(PT_KEY) || '{"default":6000,"overrides":[]}');
         if (!Array.isArray(raw.overrides)) raw.overrides = [];
         pointTargetsCache = raw;
         return raw;
-      } catch(e) { return { default: 15000, overrides: [] }; }
+      } catch(e) { return { default: 6000, overrides: [] }; }
     }
     function savePointTargets(obj) {
       pointTargetsCache = obj;
@@ -739,7 +739,7 @@
         .then(res => res.json())
         .then(result => {
           if (result && result.success !== false) {
-            const obj = { default: result.default || 15000, overrides: Array.isArray(result.overrides) ? result.overrides : [] };
+            const obj = { default: result.default || 6000, overrides: Array.isArray(result.overrides) ? result.overrides : [] };
             pointTargetsCache = obj;
             try { localStorage.setItem(PT_KEY, JSON.stringify(obj)); } catch(e) {}
           }
@@ -753,7 +753,7 @@
       const match = (pt.overrides || []).find(o =>
         o.player.toLowerCase() === key && o.period === perkey
       );
-      return match ? match.points : (pt.default || 15000);
+      return match ? match.points : (pt.default || 6000);
     }
     function escapeHtmlDash(text) {
       const d = document.createElement('div'); d.textContent = text; return d.innerHTML;
@@ -1387,7 +1387,7 @@ function filterPlayerTable() {
     function updateLastImportedDisplay(timestampText) {
       const display = document.getElementById('lastImportedDisplay');
       if (!display) return;
-      const reqPoints = (loadPointTargets().default || 15000).toLocaleString();
+      const reqPoints = (loadPointTargets().default || 6000).toLocaleString();
       if (!timestampText || timestampText === 'Never' || timestampText === 'No imports yet') {
         // Timestamp missing from summary response — fetch it directly as a fallback
         fetch(window.GAS_WEB_APP_URL, {
@@ -1402,7 +1402,7 @@ function filterPlayerTable() {
                        (result && typeof result.value === 'string' && result.value) ||
                        (result && typeof result.lastImportTimestamp === 'string' && result.lastImportTimestamp) ||
                        null;
-            const reqPts = (loadPointTargets().default || 15000).toLocaleString();
+            const reqPts = (loadPointTargets().default || 6000).toLocaleString();
             if (ts && ts !== 'Never' && ts !== 'No imports yet') {
               display.innerHTML = `Last Imported: ${ts} | Required Points: ${reqPts}`;
             } else {
@@ -1500,7 +1500,7 @@ function filterPlayerTable() {
           }
         }
 
-        const defaultTarget = loadPointTargets().default || 15000;
+        const defaultTarget = loadPointTargets().default || 6000;
         const targetLabel = playerTarget !== defaultTarget
           ? ` <span style="font-size:10px;opacity:0.75;color:#6c5ce7;">(◎ ${playerTarget.toLocaleString()})</span>`
           : '';
