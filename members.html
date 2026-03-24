@@ -823,7 +823,7 @@
           <p style="font-size:12px;color:#6b6f85;margin:0 0 12px 0;">Set a custom point target per player per active period. Overrides the default for that cell only. Saved locally in this browser.</p>
           <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap;">
             <label style="font-size:12px;color:#6c5ce7;white-space:nowrap;font-weight:600;">Default target:</label>
-            <input type="number" id="ptDefaultInput" min="0" step="100" value="15000" style="width:100px;padding:5px 8px;border:1px solid #c0c4d8;border-radius:5px;background:#f0f2f5;color:#2c2f45;font-size:13px;">
+            <input type="number" id="ptDefaultInput" min="0" step="100" value="6000" style="width:100px;padding:5px 8px;border:1px solid #c0c4d8;border-radius:5px;background:#f0f2f5;color:#2c2f45;font-size:13px;">
             <button onclick="MembersTab.savePtDefault()" class="btn" style="padding:5px 14px;font-size:12px;">Save default</button>
           </div>
           <div style="border-top:1px solid #c0c4d8;padding-top:12px;">
@@ -909,18 +909,18 @@
       }
 
       // ── Point Targets (server-backed with localStorage cache) ─────────
-      // Schema: { default: 15000, overrides: [ { player, period, points } ] }
+      // Schema: { default: 6000, overrides: [ { player, period, points } ] }
       const PT_KEY = 'clo_point_targets';
       let pointTargetsCache = null; // in-memory cache
 
       function loadPointTargets() {
         if (pointTargetsCache) return pointTargetsCache;
         try {
-          const raw = JSON.parse(localStorage.getItem(PT_KEY) || '{"default":15000,"overrides":[]}');
+          const raw = JSON.parse(localStorage.getItem(PT_KEY) || '{"default":6000,"overrides":[]}');
           if (!Array.isArray(raw.overrides)) raw.overrides = [];
           pointTargetsCache = raw;
           return raw;
-        } catch(e) { return { default: 15000, overrides: [] }; }
+        } catch(e) { return { default: 6000, overrides: [] }; }
       }
       function savePointTargets(obj) {
         pointTargetsCache = obj;
@@ -941,7 +941,7 @@
           .then(res => res.json())
           .then(result => {
             if (result && result.success !== false) {
-              const obj = { default: result.default || 15000, overrides: Array.isArray(result.overrides) ? result.overrides : [] };
+              const obj = { default: result.default || 6000, overrides: Array.isArray(result.overrides) ? result.overrides : [] };
               pointTargetsCache = obj;
               try { localStorage.setItem(PT_KEY, JSON.stringify(obj)); } catch(e) {}
             }
@@ -956,11 +956,11 @@
         const match = (pt.overrides || []).find(o =>
           o.player.toLowerCase() === pkey && o.period === perkey
         );
-        return match ? match.points : (pt.default || 15000);
+        return match ? match.points : (pt.default || 6000);
       }
       // getPeriodTarget: column header uses global default (no period-level override)
       function getPeriodTarget() {
-        return loadPointTargets().default || 15000;
+        return loadPointTargets().default || 6000;
       }
       function escapeHtmlMem(text) {
         const d = document.createElement('div'); d.textContent = text; return d.innerHTML;
@@ -993,7 +993,7 @@
       function renderPointTargetsPanel() {
         const pt = loadPointTargets();
         const defInput = document.getElementById('ptDefaultInput');
-        if (defInput) defInput.value = pt.default || 15000;
+        if (defInput) defInput.value = pt.default || 6000;
         populatePtSelects();
         const list = document.getElementById('ptOverrideList');
         if (!list) return;
@@ -1091,7 +1091,7 @@
           const res = await fetch(window.GAS_WEB_APP_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'getRecentActivePeriodChestPoints', limitPeriods: 5, targetPoints: loadPointTargets().default || 15000 })
+            body: JSON.stringify({ action: 'getRecentActivePeriodChestPoints', limitPeriods: 5, targetPoints: loadPointTargets().default || 6000 })
           });
           const result = await res.json();
 
