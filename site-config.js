@@ -29,6 +29,8 @@ const SITE_CONFIG = {
     'LION S 5',
     'MerdO LH', 
     'Otto S4',
+    '01ASENA sk5',
+    'cCc CP City',
     // 'AnotherSpecialMember'
   ],
 
@@ -38,6 +40,7 @@ const SITE_CONFIG = {
     { name: 'Events', file: 'events.html', icon: 'events.png' },
     { name: 'Members', file: 'members.html', icon: 'members.png' },
     { name: 'Troops', file: 'troops.html', icon: 'troops.png' },
-    { name: 'Progress', file: 'progress.html', icon: 'progress.png' }
+    { name: 'Progress', file: 'progress.html', icon: 'progress.png' },
+    { name: 'Calendar', file: 'calendar.html', icon: 'calendar.png' }
   ]
 };

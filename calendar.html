@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>cCc League One - Calendar</title>
+  <link rel="icon" href="favicon.png" type="image/png">
+  <script src="config.js"></script>
+  <script src="portal-shim.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Google Sans', 'Roboto', Arial, sans-serif;
+      background: linear-gradient(135deg, #232526 0%, #414345 100%);
+      color: #f3f3f3;
+      text-align: center;
+      padding: 32px 16px 60px 16px;
+      min-height: 100vh;
+      background-attachment: fixed;
+    }
+    body { top: 0 !important; }
+    .goog-te-banner-frame.skiptranslate { display: none !important; }
+    .goog-te-balloon-frame { display: none !important; }
+    html, body { margin-top: 0 !important; top: 0 !important; }
+    body.translated-ltr, body.translated-rtl { margin-top: 0 !important; top: 0 !important; }
+    .goog-te-banner-frame, iframe.goog-te-banner-frame, .goog-te-banner-frame.skiptranslate { display: none !important; visibility: hidden !important; height: 0 !important; }
+    #goog-gt-tt, .goog-te-balloon-frame { display: none !important; visibility: hidden !important; }
+    .goog-text-highlight { background: transparent !important; box-shadow: none !important; }
+    #google_translate_element, #translateToggleBtn { top: auto !important; right: 8px !important; bottom: 8px !important; }
+
+    .tab-content { padding: 16px; max-width: 1400px; margin: 0 auto; background: rgba(30, 34, 40, 0.95); border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.25); }
+    h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; color: #ffb300; text-shadow: 0 2px 8px #000a; display: flex; align-items: center; justify-content: center; gap: 12px; }
+    .header { margin-bottom: 16px; }
+    .header p { color: #b0b0b0; font-size: 14px; text-align: center; }
+
+    /* ── Calendar styles ───────────────────────────── */
+    .cal-toolbar {
+      display: flex; align-items: center; justify-content: center;
+      gap: 12px; margin-bottom: 16px; flex-wrap: wrap;
+    }
+    .cal-toolbar button {
+      background: #232526; border: 1px solid #444; color: #e0e0e0;
+      border-radius: 6px; padding: 8px 14px; font-size: 14px;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .cal-toolbar button:hover { background: #333; color: #ffb300; border-color: #ffb300; }
+    .cal-month-label { font-size: 20px; font-weight: 700; color: #ffb300; min-width: 200px; text-align: center; }
+    .cal-today-btn { font-weight: 600; }
+
+    .cal-grid {
+      display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px;
+      background: #333; border: 1px solid #444; border-radius: 10px; overflow: hidden;
+    }
+    .cal-dow { background: #1a1d21; color: #ffb300; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 4px; text-align: center; }
+    .cal-day { background: #232526; min-height: 90px; padding: 4px; text-align: left; position: relative; transition: background 0.15s; cursor: default; }
+    .cal-day:hover { background: #2a2d30; }
+    .cal-day.other-month { background: #1a1c1e; }
+    .cal-day.other-month .cal-day-num { color: #555; }
+    .cal-day.today { box-shadow: inset 0 0 0 2px #ffb300; }
+    .cal-day-num { display: inline-block; font-size: 13px; font-weight: 600; color: #e0e0e0; padding: 2px 6px; border-radius: 4px; margin-bottom: 2px; }
+    .cal-day.today .cal-day-num { background: #ffb300; color: #232526; }
+
+    .cal-event { display: block; font-size: 11px; padding: 2px 5px; margin: 1px 0; border-radius: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; line-height: 1.4; font-weight: 500; transition: filter 0.15s; }
+    .cal-event:hover { filter: brightness(1.2); }
+    .cal-event.color-amber  { background: #ffb300; color: #232526; }
+    .cal-event.color-blue   { background: #42a5f5; color: #fff; }
+    .cal-event.color-green  { background: #66bb6a; color: #232526; }
+    .cal-event.color-red    { background: #ef5350; color: #fff; }
+    .cal-event.color-purple { background: #ab47bc; color: #fff; }
+    .cal-event.color-cyan   { background: #26c6da; color: #232526; }
+    .cal-event.color-orange { background: #ff7043; color: #fff; }
+    .cal-event.color-pink   { background: #ec407a; color: #fff; }
+    .cal-event.color-teal   { background: #26a69a; color: #fff; }
+
+    .cal-more { font-size: 10px; color: #ffb300; padding: 1px 4px; cursor: pointer; font-weight: 600; }
+    .cal-more:hover { text-decoration: underline; }
+
+    /* ── Event detail popup ──────────────────────── */
+    .event-popup-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 8000; align-items: center; justify-content: center; }
+    .event-popup-overlay.open { display: flex; }
+    .event-popup { background: #232526; border: 1px solid #444; border-radius: 12px; padding: 24px; max-width: 420px; width: 90vw; box-shadow: 0 8px 32px rgba(0,0,0,0.5); text-align: left; }
+    .event-popup h3 { color: #ffb300; margin-bottom: 12px; font-size: 18px; }
+    .event-popup .ep-row { margin-bottom: 8px; font-size: 14px; color: #e0e0e0; }
+    .event-popup .ep-label { font-weight: 600; color: #ffb300; }
+    .event-popup .ep-desc { margin-top: 12px; background: #1a1d21; border-radius: 6px; padding: 10px; font-size: 13px; color: #ccc; line-height: 1.5; white-space: pre-wrap; }
+    .event-popup .ep-close { margin-top: 16px; display: inline-block; padding: 8px 20px; background: #ffb300; color: #232526; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
+    .event-popup .ep-color-dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+
+    /* ── Day detail popup ────────────────────────── */
+    .day-popup-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 7500; align-items: center; justify-content: center; }
+    .day-popup-overlay.open { display: flex; }
+    .day-popup { background: #232526; border: 1px solid #444; border-radius: 12px; padding: 24px; max-width: 380px; width: 90vw; box-shadow: 0 8px 32px rgba(0,0,0,0.5); text-align: left; max-height: 80vh; overflow-y: auto; }
+    .day-popup h3 { color: #ffb300; margin-bottom: 12px; font-size: 18px; }
+    .day-popup .dp-event { padding: 8px 10px; margin-bottom: 6px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; transition: filter 0.15s; }
+    .day-popup .dp-event:hover { filter: brightness(1.2); }
+    .day-popup .dp-time { font-size: 11px; opacity: 0.85; margin-top: 2px; }
+    .day-popup .dp-close { margin-top: 12px; display: inline-block; padding: 8px 20px; background: #ffb300; color: #232526; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
+
+    /* ── Upcoming sidebar ────────────────────────── */
+    .cal-layout { display: flex; gap: 16px; align-items: flex-start; }
+    .cal-main { flex: 1; min-width: 0; }
+    .cal-sidebar { width: 280px; flex-shrink: 0; background: #1a1d21; border: 1px solid #444; border-radius: 10px; padding: 16px; text-align: left; max-height: 600px; overflow-y: auto; }
+    .cal-sidebar h3 { color: #ffb300; font-size: 15px; margin-bottom: 12px; }
+    .cal-sidebar-event { padding: 8px 10px; margin-bottom: 8px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: filter 0.15s; }
+    .cal-sidebar-event:hover { filter: brightness(1.2); }
+    .cal-sidebar-event .se-title { font-weight: 600; font-size: 13px; }
+    .cal-sidebar-event .se-date { opacity: 0.8; margin-top: 2px; }
+    .cal-sidebar-empty { color: #666; font-size: 13px; font-style: italic; }
+
+    @media (max-width: 900px) { .cal-layout { flex-direction: column; } .cal-sidebar { width: 100%; max-height: 300px; } }
+    @media (max-width: 600px) { .cal-day { min-height: 60px; } .cal-event { font-size: 9px; padding: 1px 3px; } .cal-day-num { font-size: 11px; } .cal-dow { font-size: 10px; padding: 6px 2px; } .cal-month-label { font-size: 16px; min-width: 160px; } }
+
+    /* ── Sticky Navigation Bar ───────────────────── */
+    .tab-nav { background: rgba(30, 34, 40, 0.95); border-bottom: 1px solid #444; box-shadow: 0 2px 8px rgba(0,0,0,0.25); position: sticky; top: 0; z-index: 9999; width: 100%; left: 0; right: 0; overflow: visible; }
+    .tab-nav-container { max-width: 1400px; margin: 0 auto; display: flex; align-items: center; padding: 0 16px; overflow: visible; flex-wrap: wrap; }
+    .nav-brand { font-size: 20px; font-weight: 700; color: #ffb300; padding: 16px 0; margin-right: 32px; white-space: nowrap; display: flex; align-items: center; gap: 8px; text-shadow: 0 2px 8px #000a; }
+    .nav-brand img { height: 32px; width: auto; }
+    .tab-buttons { display: flex; gap: 4px; flex: 1; overflow-x: auto; overflow-y: hidden; align-items: center; height: 100px; }
+    .tab-btn { padding: 12px 16px; background: none; border: none; color: #e0e0e0; font-size: 28px; font-weight: 500; border-bottom: 3px solid transparent; transition: all 0.2s; white-space: nowrap; text-decoration: none; display: block; cursor: pointer; position: relative; }
+    .tab-btn:hover { color: #ffb300; background: #232526; }
+    .tab-btn.active { color: #ffb300; border-bottom-color: #ffb300; }
+    .tab-btn[title]:hover::after { content: attr(title); position: absolute; top: -42px; left: 50%; transform: translateX(-50%); background: #232526; color: #ffb300; padding: 6px 12px; border-radius: 4px; font-size: 12px; white-space: nowrap; z-index: 1001; border: 1px solid #444; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+    .tab-btn .tab-icon { display: block; margin: 0 auto; height: 40px; width: auto; font-size: 16px; line-height: 1.2; font-weight: 500; white-space: nowrap; filter: drop-shadow(0 2px 8px #000a); }
+    .tab-icon-emoji { display: block; margin: 0 auto; font-size: 32px; line-height: 40px; height: 40px; filter: drop-shadow(0 2px 8px #000a); }
+    .tab-label.mobile-only { display: none; }
+    .tab-icon.desktop-only { display: block; margin: 0 auto; height: 40px; width: auto; }
+    .hamburger { display: none; flex-direction: column; gap: 4px; background: none; border: none; cursor: pointer; padding: 8px; }
+    .hamburger span { display: block; width: 24px; height: 3px; background: #ffb300; border-radius: 2px; transition: all 0.2s; }
+
+    @media (max-width: 800px) {
+      .tab-nav { position: fixed; top: 0; left: 0; right: 0; width: 100%; z-index: 9999; }
+      .tab-nav-container { flex-wrap: wrap; padding: 8px; }
+      .nav-brand { flex: 1; margin-right: 8px; font-size: 16px; padding: 8px 0; }
+      .nav-brand img { height: 24px; width: 24px; }
+      .hamburger { display: flex; order: 2; }
+      .tab-buttons { flex-direction: column; align-items: stretch; max-height: 60vh; overflow-y: auto; background: #232526; position: absolute; top: 60px; left: 0; right: 0; width: 100%; z-index: 10000; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); display: none; order: 10; height: auto; }
+      .tab-buttons.open { display: flex; }
+      .tab-btn { font-size: 18px; padding: 18px 24px; border-bottom: 1px solid #444; display: flex; align-items: center; justify-content: flex-start; background: none; height: auto; }
+      .tab-btn:last-child { border-bottom: none; }
+      .tab-label.mobile-only { display: inline; }
+      .tab-icon.desktop-only { display: none; }
+      .tab-icon-emoji.desktop-only { display: none; }
+      #readOnlyBadge, #signedInUserBadge, #logoutBtn, #signInManageBtn { order: 3; margin: 4px 0 4px auto !important; font-size: 11px !important; padding: 6px 8px !important; }
+      body { padding-top: 100px; }
+    }
+    @media (min-width: 801px) {
+      .tab-label.mobile-only { display: none; }
+      .tab-icon.desktop-only { display: block; }
+      .tab-icon-emoji.desktop-only { display: block; }
+      .tab-buttons { flex-direction: row; align-items: center; position: static; max-height: none; overflow-y: visible; background: none; box-shadow: none; border-radius: 0; display: flex !important; }
+      .tab-btn { font-size: 28px; padding: 12px 16px; border-bottom: 3px solid transparent; display: block; justify-content: center; }
+      .hamburger { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Google Translate Widget -->
+  <div id="google_translate_element" style="position:fixed;bottom:8px;right:8px;z-index:7000;"></div>
+  <button id="translateToggleBtn" type="button" aria-label="Toggle translation" style="position:fixed;bottom:8px;right:8px;z-index:7001;display:none;align-items:center;justify-content:center;width:38px;height:38px;border:1px solid #444;border-radius:8px;background:#232526;color:#ffb300;font-size:18px;cursor:pointer;">🌐</button>
+  <style>
+    @media (max-width: 800px) {
+      #google_translate_element { max-width:0;overflow:hidden;opacity:0;pointer-events:none;transition:max-width .2s,opacity .2s; }
+      body.translate-open #google_translate_element { max-width:260px;opacity:1;pointer-events:auto; }
+      #translateToggleBtn { display: inline-flex !important; }
+    }
+    @media (min-width: 801px) { #translateToggleBtn { display: none !important; } }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var tb = document.getElementById('translateToggleBtn'), tw = document.getElementById('google_translate_element');
+      if (!tb || !tw) return;
+      tb.addEventListener('click', function (e) { e.stopPropagation(); document.body.classList.toggle('translate-open'); });
+      document.addEventListener('click', function (e) { if (!document.body.classList.contains('translate-open')) return; if (tw.contains(e.target) || tb.contains(e.target)) return; document.body.classList.remove('translate-open'); });
+    });
+  </script>
+  <script>function googleTranslateElementInit(){new google.translate.TranslateElement({pageLanguage:'en',layout:google.translate.TranslateElement.InlineLayout.SIMPLE},'google_translate_element');}</script>
+  <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <!-- Auth -->
+  <script>
+    const BACKEND_VERIFY_URL = window.GAS_WEB_APP_URL;
+    const AUTH_KEY = 'ccc_portal_google_auth';
+    const AUTH_EMAIL_KEY = 'ccc_portal_google_email';
+
+    function setReadOnlyMode(on) { document.documentElement.classList.toggle('read-only-mode', on); if (document.body) document.body.classList.toggle('read-only-mode', on); }
+    function updateSignedInBadge(email) {
+      var b = document.getElementById('signedInUserBadge'), l = document.getElementById('logoutBtn'), s = document.getElementById('signInManageBtn');
+      if (!b) return;
+      if (email) { b.innerHTML = email; b.style.display = 'inline-block'; if (l) l.style.display = 'inline-block'; if (s) s.style.display = 'none'; }
+      else { b.textContent = ''; b.style.display = 'none'; if (l) l.style.display = 'none'; if (s) s.style.display = 'inline-block'; }
+    }
+    function handleLogout() { try{localStorage.removeItem(AUTH_KEY)}catch(e){} try{localStorage.removeItem(AUTH_EMAIL_KEY)}catch(e){} setReadOnlyMode(true); updateSignedInBadge(null); setTimeout(function(){location.reload()},200); }
+    function showGoogleLogin() {
+      var d = document.createElement('div'); d.id='login-overlay';
+      d.style='position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.8);z-index:9999;display:flex;align-items:center;justify-content:center;';
+      d.innerHTML='<div style="background:#232526;padding:32px 24px;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.5);display:flex;flex-direction:column;align-items:center;gap:16px;min-width:300px;border:1px solid #444;"><h2 style="margin-bottom:8px;color:#ffb300;">Sign in to Manage</h2><p style="font-size:14px;color:#e0e0e0;text-align:center;margin:0 0 8px 0;">Use your Google account to access management features</p><div id="g_id_onload" data-client_id="47674606892-0m90hd0cd01kijo69ssuqtn1j3igp32i.apps.googleusercontent.com" data-callback="onGoogleSignIn" data-auto_prompt="false" data-ux_mode="popup"></div><div id="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="signin" data-shape="rectangular" data-logo_alignment="left"></div><div style="width:100%;height:1px;background:#444;margin:8px 0;"></div><button id="guest-btn" style="width:100%;margin-top:8px;padding:12px 20px;border:1px solid #444;background:#232526;color:#ffb300;font-size:15px;font-weight:600;border-radius:6px;cursor:pointer;">Continue as Guest (Read-Only)</button><div id="login-error" style="color:#ff5252;font-size:13px;display:none;"></div></div>';
+      document.body.appendChild(d);
+      setTimeout(function(){
+        var gb=document.getElementById('guest-btn'); if(gb){gb.onclick=function(){document.getElementById('login-overlay').remove();setReadOnlyMode(true);try{localStorage.removeItem(AUTH_KEY)}catch(e){}try{localStorage.removeItem(AUTH_EMAIL_KEY)}catch(e){}updateSignedInBadge(null);};}
+        if(window.google&&google.accounts&&google.accounts.id){try{google.accounts.id.initialize({client_id:'47674606892-0m90hd0cd01kijo69ssuqtn1j3igp32i.apps.googleusercontent.com',callback:onGoogleSignIn,auto_select:false,ux_mode:'popup'});google.accounts.id.renderButton(document.getElementById('g_id_signin'),{type:'standard',size:'large',theme:'outline',text:'signin',shape:'rectangular',logo_alignment:'left'});}catch(e){console.error(e);}}
+      },100);
+    }
+    window.onGoogleSignIn = async function(response) {
+      var idToken=response.credential;
+      try{
+        var cfUrl=window.CLOUDFLARE_WORKER_URL||window.GAS_WEB_APP_URL;
+        var tr=await fetch(cfUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({idToken:idToken})});
+        var td=await tr.json();
+        if(!td.success||!td.token_verified) throw new Error(td.error||'Token verification failed');
+        var email=td.email;
+        var r=await fetch(BACKEND_VERIFY_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'verifyUserPermission',email:email})});
+        var data=await r.json();
+        if(data.isAllowedEditor){try{localStorage.setItem(AUTH_KEY,idToken)}catch(e){}try{localStorage.setItem(AUTH_EMAIL_KEY,email)}catch(e){}setReadOnlyMode(false);updateSignedInBadge(email);var ov=document.getElementById('login-overlay');if(ov)ov.style.display='none';}
+        else{setReadOnlyMode(true);var ed=document.getElementById('login-error');if(ed){ed.style.display='block';ed.textContent='Your account does not have editor access';}}
+      }catch(err){console.error(err);var ed2=document.getElementById('login-error');if(ed2){ed2.style.display='block';ed2.textContent='Sign-in failed: '+err.message;}}
+    };
+    window.addEventListener('DOMContentLoaded', function() {
+      var setRestricted = function(vis) {
+        var d = vis ? '' : 'none';
+        ['events.html','members.html','troops.html','compensation.html'].forEach(function(h){document.querySelectorAll('.tab-buttons .tab-btn[href="'+h+'"]').forEach(function(l){l.style.display=d;});});
+      };
+      var token; try{token=localStorage.getItem(AUTH_KEY)}catch(e){token=null;}
+      var email; try{email=localStorage.getItem(AUTH_EMAIL_KEY)}catch(e){email=null;}
+      if(token&&email){setReadOnlyMode(false);updateSignedInBadge(email);setRestricted(true);var bt=document.getElementById('bankTabBtn');if(bt)bt.style.display='flex';}
+      else{setReadOnlyMode(true);updateSignedInBadge(null);setRestricted(false);var bt2=document.getElementById('bankTabBtn');if(bt2)bt2.style.display='none';
+        var nav=document.querySelector('.tab-nav-container');
+        if(nav&&!document.getElementById('signInManageBtn')){var btn=document.createElement('button');btn.id='signInManageBtn';btn.textContent='🔑 Sign in to Manage';btn.style='margin-left:16px;padding:8px 18px;background:#1a73e8;color:#fff;border:none;border-radius:5px;font-size:14px;font-weight:600;cursor:pointer;transition:background 0.2s;';btn.onclick=showGoogleLogin;nav.appendChild(btn);}
+      }
+      // Hamburger
+      var hb=document.getElementById('navHamburger'),nt=document.getElementById('navTabs');
+      if(hb&&nt){hb.addEventListener('click',function(){nt.classList.toggle('open');});document.addEventListener('click',function(e){if(!hb.contains(e.target)&&!nt.contains(e.target))nt.classList.remove('open');});}
+    });
+  </script>
+
+  <!-- Navigation -->
+  <nav class="tab-nav">
+    <div class="tab-nav-container">
+      <div class="nav-brand" id="navBrand"><img src="favicon.png" alt="" style="height:32px;width:32px;vertical-align:middle;margin-right:8px;"> cCc League One</div>
+      <button class="hamburger" id="navHamburger" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+      <div class="tab-buttons" id="navTabs">
+        <a href="dashboard.html" class="tab-btn" title="Dashboard"><img src="chests.png" alt="Dashboard" class="tab-icon desktop-only"><span class="tab-label mobile-only">Dashboard</span></a>
+        <a href="events.html" class="tab-btn" title="Events"><img src="events.png" alt="Events" class="tab-icon desktop-only"><span class="tab-label mobile-only">Events</span></a>
+        <a href="members.html" class="tab-btn" title="Members"><img src="members.png" alt="Members" class="tab-icon desktop-only"><span class="tab-label mobile-only">Members</span></a>
+        <a href="troops.html" class="tab-btn" title="Troops"><img src="troops.png" alt="Troops" class="tab-icon desktop-only"><span class="tab-label mobile-only">Troops</span></a>
+        <a href="progress.html" class="tab-btn" title="Progress"><img src="progress.png" alt="Progress" class="tab-icon desktop-only"><span class="tab-label mobile-only">Progress</span></a>
+        <a href="compensation.html" class="tab-btn" title="Compensation"><img src="compensation.png" alt="Compensation" class="tab-icon desktop-only"><span class="tab-label mobile-only">Compensation</span></a>
+        <a href="competition.html" class="tab-btn" title="Competition"><img src="competition.png" alt="Competition" class="tab-icon desktop-only"><span class="tab-label mobile-only">Competition</span></a>
+        <a href="points.html" class="tab-btn" title="Points Reference"><img src="chest_points.png" alt="Points" class="tab-icon desktop-only"><span class="tab-label mobile-only">Points Reference</span></a>
+        <a href="calendar.html" class="tab-btn active" title="Calendar"><img src="calendar.png" alt="Calendar" class="tab-icon desktop-only"><span class="tab-label mobile-only">Calendar</span></a>
+        <a href="bank.html" class="tab-btn" id="bankTabBtn" title="Bank" style="display:none;"><img src="bank.png" alt="Bank" class="tab-icon desktop-only"><span class="tab-label mobile-only">Bank</span></a>
+      </div>
+      <div id="readOnlyBadge" style="display:none;padding:8px 12px;background:#fff3cd;border-radius:4px;font-size:12px;color:#856404;">🔒 Read-Only Mode</div>
+      <div id="signedInUserBadge" style="display:none;margin-left:auto;padding:8px 12px;background:#e8eaf2;border-radius:4px;font-size:12px;color:#6c5ce7;border:1px solid #c0c4d8;"></div>
+      <button id="logoutBtn" onclick="handleLogout()" style="display:none;margin-left:8px;padding:8px 10px;background:#c62828;color:#fff;border:none;border-radius:4px;font-size:12px;cursor:pointer;">Log out</button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="tab-content active">
+    <div class="header">
+      <h1>📅 Clan Calendar</h1>
+      <p>Schedule and track clan events, wars, and activities</p>
+    </div>
+
+    <div class="cal-toolbar">
+      <button onclick="calNav(-1)">◀ Prev</button>
+      <span class="cal-month-label" id="calMonthLabel"></span>
+      <button onclick="calNav(1)">Next ▶</button>
+      <button class="cal-today-btn" onclick="calToday()">Today</button>
+    </div>
+
+    <div class="cal-layout">
+      <div class="cal-main">
+        <div class="cal-grid" id="calGrid"></div>
+      </div>
+      <div class="cal-sidebar" id="calSidebar">
+        <h3>📋 Upcoming Events</h3>
+        <div id="calUpcoming"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Event Detail Popup -->
+  <div class="event-popup-overlay" id="eventPopupOverlay">
+    <div class="event-popup" id="eventPopup">
+      <h3 id="epTitle"></h3>
+      <div class="ep-row"><span class="ep-label">📅 Date:</span> <span id="epDate"></span></div>
+      <div class="ep-row"><span class="ep-label">⏰ Time:</span> <span id="epTime"></span></div>
+      <div class="ep-row"><span class="ep-label">🏷️ Category:</span> <span id="epCategory"></span></div>
+      <div class="ep-desc" id="epDesc" style="display:none;"></div>
+      <button class="ep-close" onclick="closeEventPopup()">Close</button>
+    </div>
+  </div>
+
+  <!-- Day Detail Popup -->
+  <div class="day-popup-overlay" id="dayPopupOverlay">
+    <div class="day-popup" id="dayPopup">
+      <h3 id="dpTitle"></h3>
+      <div id="dpEvents"></div>
+      <button class="dp-close" onclick="closeDayPopup()">Close</button>
+    </div>
+  </div>
+
+  <script>
+  (function() {
+    'use strict';
+    var COLORS = ['amber','blue','green','red','purple','cyan','orange','pink','teal'];
+    var COLOR_HEX = {amber:'#ffb300',blue:'#42a5f5',green:'#66bb6a',red:'#ef5350',purple:'#ab47bc',cyan:'#26c6da',orange:'#ff7043',pink:'#ec407a',teal:'#26a69a'};
+
+    var EVENTS = [
+      { title: 'Chest Period Start', date: '2026-03-24', color: 'amber', category: 'Chests', description: 'New chest tracking period begins.' },
+      { title: 'Clan War', date: '2026-03-26', endDate: '2026-03-28', color: 'red', category: 'War', description: 'Clan war — all members participate!' },
+      { title: 'Troop Upgrade Day', date: '2026-03-29', color: 'green', category: 'Troops', description: 'Focus on upgrading troops today.' },
+      { title: 'Competition Deadline', date: '2026-03-30', color: 'purple', category: 'Competition', description: 'Competition results finalized.' },
+      { title: 'Chest Period End', date: '2026-03-30', color: 'amber', category: 'Chests', description: 'Current chest period ends at 23:59 UTC.' },
+    ];
+
+    var viewYear, viewMonth;
+    function init() { var n = new Date(); viewYear = n.getFullYear(); viewMonth = n.getMonth(); render(); }
+
+    window.calNav = function(dir) { viewMonth += dir; if (viewMonth < 0) { viewMonth = 11; viewYear--; } else if (viewMonth > 11) { viewMonth = 0; viewYear++; } render(); };
+    window.calToday = function() { var n = new Date(); viewYear = n.getFullYear(); viewMonth = n.getMonth(); render(); };
+
+    function render() {
+      var grid = document.getElementById('calGrid');
+      var label = document.getElementById('calMonthLabel');
+      var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      label.textContent = months[viewMonth] + ' ' + viewYear;
+      var html = '';
+      var dows = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+      for (var d = 0; d < 7; d++) html += '<div class="cal-dow">' + dows[d] + '</div>';
+      var firstDay = new Date(viewYear, viewMonth, 1).getDay();
+      var startOffset = (firstDay === 0) ? 6 : firstDay - 1;
+      var daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+      var prevMonthDays = new Date(viewYear, viewMonth, 0).getDate();
+      var today = new Date();
+      var todayStr = today.getFullYear() + '-' + pad(today.getMonth() + 1) + '-' + pad(today.getDate());
+      var totalCells = Math.ceil((startOffset + daysInMonth) / 7) * 7;
+      for (var i = 0; i < totalCells; i++) {
+        var dayNum, dateStr, isOther = false;
+        if (i < startOffset) { dayNum = prevMonthDays - startOffset + i + 1; var pm = viewMonth === 0 ? 11 : viewMonth - 1; var py = viewMonth === 0 ? viewYear - 1 : viewYear; dateStr = py + '-' + pad(pm + 1) + '-' + pad(dayNum); isOther = true; }
+        else if (i >= startOffset + daysInMonth) { dayNum = i - startOffset - daysInMonth + 1; var nm = viewMonth === 11 ? 0 : viewMonth + 1; var ny = viewMonth === 11 ? viewYear + 1 : viewYear; dateStr = ny + '-' + pad(nm + 1) + '-' + pad(dayNum); isOther = true; }
+        else { dayNum = i - startOffset + 1; dateStr = viewYear + '-' + pad(viewMonth + 1) + '-' + pad(dayNum); }
+        var cls = 'cal-day'; if (isOther) cls += ' other-month'; if (dateStr === todayStr) cls += ' today';
+        var dayEvents = getEventsForDate(dateStr);
+        var evHtml = ''; var maxShow = 3;
+        for (var e = 0; e < Math.min(dayEvents.length, maxShow); e++) { var ev = dayEvents[e]; evHtml += '<div class="cal-event color-' + ev.color + '" onclick="showEventPopup(' + EVENTS.indexOf(ev) + ')" title="' + escAttr(ev.title) + '">' + esc(ev.title) + '</div>'; }
+        if (dayEvents.length > maxShow) evHtml += '<div class="cal-more" onclick="showDayPopup(\'' + dateStr + '\')">+' + (dayEvents.length - maxShow) + ' more</div>';
+        html += '<div class="' + cls + '" ondblclick="showDayPopup(\'' + dateStr + '\')"><span class="cal-day-num">' + dayNum + '</span>' + evHtml + '</div>';
+      }
+      grid.innerHTML = html;
+      renderSidebar();
+    }
+
+    function getEventsForDate(dateStr) {
+      var result = [];
+      for (var i = 0; i < EVENTS.length; i++) { var ev = EVENTS[i]; if (ev.endDate) { if (dateStr >= ev.date && dateStr <= ev.endDate) result.push(ev); } else { if (ev.date === dateStr) result.push(ev); } }
+      return result;
+    }
+    function renderSidebar() {
+      var container = document.getElementById('calUpcoming');
+      var now = new Date(); var todayStr = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate());
+      var upcoming = EVENTS.filter(function(ev) { var end = ev.endDate || ev.date; return end >= todayStr; }).sort(function(a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+      if (upcoming.length === 0) { container.innerHTML = '<div class="cal-sidebar-empty">No upcoming events</div>'; return; }
+      var html = '';
+      for (var i = 0; i < Math.min(upcoming.length, 10); i++) { var ev = upcoming[i]; var dl = formatDate(ev.date); if (ev.endDate) dl += ' — ' + formatDate(ev.endDate); html += '<div class="cal-sidebar-event color-' + ev.color + '" onclick="showEventPopup(' + EVENTS.indexOf(ev) + ')"><div class="se-title">' + esc(ev.title) + '</div><div class="se-date">' + dl + '</div></div>'; }
+      container.innerHTML = html;
+    }
+
+    window.showEventPopup = function(idx) {
+      var ev = EVENTS[idx]; if (!ev) return;
+      document.getElementById('epTitle').textContent = ev.title;
+      document.getElementById('epDate').textContent = formatDate(ev.date) + (ev.endDate ? ' — ' + formatDate(ev.endDate) : '');
+      document.getElementById('epTime').textContent = ev.time || 'All day';
+      document.getElementById('epCategory').innerHTML = '<span class="ep-color-dot" style="background:' + (COLOR_HEX[ev.color] || '#ffb300') + '"></span>' + (ev.category || '—');
+      var desc = document.getElementById('epDesc'); if (ev.description) { desc.textContent = ev.description; desc.style.display = 'block'; } else { desc.style.display = 'none'; }
+      document.getElementById('eventPopupOverlay').classList.add('open');
+    };
+    window.closeEventPopup = function() { document.getElementById('eventPopupOverlay').classList.remove('open'); };
+    window.showDayPopup = function(dateStr) {
+      var evts = getEventsForDate(dateStr);
+      document.getElementById('dpTitle').textContent = formatDate(dateStr);
+      var html = ''; if (evts.length === 0) html = '<div style="color:#666;font-style:italic;padding:8px 0;">No events on this day</div>';
+      for (var i = 0; i < evts.length; i++) { var ev = evts[i]; html += '<div class="dp-event color-' + ev.color + '" onclick="closeDayPopup();showEventPopup(' + EVENTS.indexOf(ev) + ')">' + esc(ev.title) + (ev.time ? '<div class="dp-time">' + ev.time + '</div>' : '') + '</div>'; }
+      document.getElementById('dpEvents').innerHTML = html;
+      document.getElementById('dayPopupOverlay').classList.add('open');
+    };
+    window.closeDayPopup = function() { document.getElementById('dayPopupOverlay').classList.remove('open'); };
+    document.getElementById('eventPopupOverlay').addEventListener('click', function(e) { if (e.target === this) closeEventPopup(); });
+    document.getElementById('dayPopupOverlay').addEventListener('click', function(e) { if (e.target === this) closeDayPopup(); });
+
+    function pad(n) { return n < 10 ? '0' + n : '' + n; }
+    function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+    function escAttr(s) { return esc(s).replace(/"/g, '&quot;'); }
+    function formatDate(str) { var p = str.split('-'); var m = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; return m[parseInt(p[1], 10) - 1] + ' ' + parseInt(p[2], 10) + ', ' + p[0]; }
+    init();
+  })();
+  </script>
+</body>
+</html>
