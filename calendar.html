@@ -70,7 +70,13 @@
     .cal-event.color-cyan   { background: #26c6da; color: #232526; }
     .cal-event.color-orange { background: #ff7043; color: #fff; }
     .cal-event.color-pink   { background: #ec407a; color: #fff; }
-    .cal-event.color-teal   { background: #26a69a; color: #fff; }
+    .cal-event.color-teal    { background: #26a69a; color: #fff; }
+    .cal-event.color-indigo  { background: #5c6bc0; color: #fff; }
+    .cal-event.color-lime    { background: #9ccc65; color: #232526; }
+    .cal-event.color-brown   { background: #8d6e63; color: #fff; }
+    .cal-event.color-crimson  { background: #d32f2f; color: #fff; }
+    .cal-event.color-gold    { background: #ffd700; color: #232526; }
+    .cal-event.color-silver  { background: #b0bec5; color: #232526; }
 
     .cal-more { font-size: 10px; color: #6c5ce7; padding: 1px 4px; cursor: pointer; font-weight: 600; }
     .cal-more:hover { text-decoration: underline; }
@@ -305,16 +311,53 @@
   <script>
   (function() {
     'use strict';
-    var COLORS = ['amber','blue','green','red','purple','cyan','orange','pink','teal'];
-    var COLOR_HEX = {amber:'#ffb300',blue:'#42a5f5',green:'#66bb6a',red:'#ef5350',purple:'#ab47bc',cyan:'#26c6da',orange:'#ff7043',pink:'#ec407a',teal:'#26a69a'};
+    var COLORS = ['amber','blue','green','red','purple','cyan','orange','pink','teal','indigo','lime','brown','crimson','gold','silver'];
+    var COLOR_HEX = {amber:'#ffb300',blue:'#42a5f5',green:'#66bb6a',red:'#ef5350',purple:'#ab47bc',cyan:'#26c6da',orange:'#ff7043',pink:'#ec407a',teal:'#26a69a',indigo:'#5c6bc0',lime:'#9ccc65',brown:'#8d6e63',crimson:'#d32f2f',gold:'#ffd700',silver:'#b0bec5'};
 
-    var EVENTS = [
-      { title: 'Chest Period Start', date: '2026-03-24', color: 'amber', category: 'Chests', description: 'New chest tracking period begins.' },
-      { title: 'Clan War', date: '2026-03-26', endDate: '2026-03-28', color: 'red', category: 'War', description: 'Clan war — all members participate!' },
-      { title: 'Troop Upgrade Day', date: '2026-03-29', color: 'green', category: 'Troops', description: 'Focus on upgrading troops today.' },
-      { title: 'Competition Deadline', date: '2026-03-30', color: 'purple', category: 'Competition', description: 'Competition results finalized.' },
-      { title: 'Chest Period End', date: '2026-03-30', color: 'amber', category: 'Chests', description: 'Current chest period ends at 23:59 UTC.' },
+    /* ── Recurring event definitions (from Google Calendar ICS) ─── */
+    var RECURRING = [
+      { title: 'Doomsday',          firstStart: '2026-03-01', duration: 1, interval: 6,  color: 'teal',    category: 'Daily Event', description: 'Doomsday — recurring every 6 days.' },
+      { title: 'Arachne\'s Swarm',  firstStart: '2026-03-02', duration: 1, interval: 6,  color: 'purple',  category: 'Daily Event', description: 'Arachne\'s Swarm — recurring every 6 days.' },
+      { title: 'Ruthless Slaughter',firstStart: '2026-03-03', duration: 1, interval: 6,  color: 'silver',  category: 'Daily Event', description: 'Ruthless Slaughter — recurring every 6 days.' },
+      { title: 'Ancients',          firstStart: '2026-03-04', duration: 1, interval: 6,  color: 'amber',  category: 'Daily Event', description: 'Ancients — recurring every 6 days.' },
+      { title: 'Thirst for Battle', firstStart: '2026-03-05', duration: 1, interval: 6,  color: 'cyan',   category: 'Daily Event', description: 'Thirst for Battle — recurring every 6 days.' },
+      { title: 'The Great Hunt',    firstStart: '2026-03-06', duration: 1, interval: 6,  color: 'green',  category: 'Daily Event', description: 'The Great Hunt — recurring every 6 days.' },
+      { title: 'KvK',               firstStart: '2026-03-05', duration: 1, interval: 24, color: 'pink',   category: 'Major Event', description: 'Kingdom vs Kingdom — recurring every 24 days.' },
+      { title: 'CoT',               firstStart: '2026-03-10', duration: 2, interval: 12, color: 'blue',   category: 'Major Event', description: 'Clash for the Throne — 2-day event recurring every 12 days.' },
+      { title: 'Armageddon',        firstStart: '2026-03-17', duration: 2, interval: 24, color: 'orange',  category: 'Major Event', description: 'Armageddon — 2-day event recurring every 24 days.' },
+      { title: 'Dark Omens',        firstStart: '2026-03-20', duration: 2, interval: 24, color: 'indigo',  category: 'Major Event', description: 'Dark Omens — 2-day event recurring every 24 days.' },
+      { title: 'Shadow Invasion',   firstStart: '2026-03-23', duration: 2, interval: 24, color: 'brown',   category: 'Major Event', description: 'Shadow Invasion — 2-day event recurring every 24 days.' },
+      { title: 'HellForge',         firstStart: '2026-03-29', duration: 2, interval: 24, color: 'crimson', category: 'Major Event', description: 'HellForge — 2-day event recurring every 24 days.' },
+      { title: 'Olympus',           firstStart: '2026-03-29', duration: 5, interval: 24, color: 'gold',    category: 'Major Event', description: 'Olympus — 5-day event recurring every 24 days.' },
     ];
+
+    function expandRecurring(rangeStart, rangeEnd) {
+      var events = [];
+      for (var r = 0; r < RECURRING.length; r++) {
+        var def = RECURRING[r];
+        var first = parseDate(def.firstStart);
+        var dur = def.duration;
+        var interval = def.interval;
+        var diffDays = Math.floor((rangeStart - first) / 86400000);
+        var skipCount = diffDays > 0 ? Math.floor(diffDays / interval) : 0;
+        var occ = new Date(first.getTime() + skipCount * interval * 86400000);
+        for (var safety = 0; safety < 200; safety++) {
+          var occEnd = new Date(occ.getTime() + (dur - 1) * 86400000);
+          if (occ > rangeEnd) break;
+          if (occEnd >= rangeStart) {
+            var ev = { title: def.title, date: fmtDate(occ), color: def.color, category: def.category, description: def.description };
+            if (dur > 1) ev.endDate = fmtDate(occEnd);
+            events.push(ev);
+          }
+          occ = new Date(occ.getTime() + interval * 86400000);
+        }
+      }
+      return events;
+    }
+    function parseDate(s) { var p = s.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+    function fmtDate(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+
+    var EVENTS = [];
 
     var viewYear, viewMonth;
     function init() { var n = new Date(); viewYear = n.getFullYear(); viewMonth = n.getMonth(); render(); }
@@ -323,6 +366,10 @@
     window.calToday = function() { var n = new Date(); viewYear = n.getFullYear(); viewMonth = n.getMonth(); render(); };
 
     function render() {
+      var rangeStart = new Date(viewYear, viewMonth - 1, 1);
+      var rangeEnd = new Date(viewYear, viewMonth + 2, 0);
+      EVENTS = expandRecurring(rangeStart, rangeEnd);
+
       var grid = document.getElementById('calGrid');
       var label = document.getElementById('calMonthLabel');
       var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -361,7 +408,9 @@
     function renderSidebar() {
       var container = document.getElementById('calUpcoming');
       var now = new Date(); var todayStr = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate());
-      var upcoming = EVENTS.filter(function(ev) { var end = ev.endDate || ev.date; return end >= todayStr; }).sort(function(a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+      var sidebarEnd = new Date(now.getTime() + 60 * 86400000);
+      var allUpcoming = expandRecurring(now, sidebarEnd);
+      var upcoming = allUpcoming.filter(function(ev) { var end = ev.endDate || ev.date; return end >= todayStr; }).sort(function(a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
       if (upcoming.length === 0) { container.innerHTML = '<div class="cal-sidebar-empty">No upcoming events</div>'; return; }
       var html = '';
       for (var i = 0; i < Math.min(upcoming.length, 10); i++) { var ev = upcoming[i]; var dl = formatDate(ev.date); if (ev.endDate) dl += ' — ' + formatDate(ev.endDate); html += '<div class="cal-sidebar-event color-' + ev.color + '" onclick="showEventPopup(' + EVENTS.indexOf(ev) + ')"><div class="se-title">' + esc(ev.title) + '</div><div class="se-date">' + dl + '</div></div>'; }
