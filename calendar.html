@@ -11,8 +11,8 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Google Sans', 'Roboto', Arial, sans-serif;
-      background: linear-gradient(135deg, #232526 0%, #414345 100%);
-      color: #f3f3f3;
+      background: linear-gradient(135deg, #f0f2f5 0%, #d8dce8 100%);
+      color: #1a1c2e;
       text-align: center;
       padding: 32px 16px 60px 16px;
       min-height: 100vh;
@@ -28,10 +28,10 @@
     .goog-text-highlight { background: transparent !important; box-shadow: none !important; }
     #google_translate_element, #translateToggleBtn { top: auto !important; right: 8px !important; bottom: 8px !important; }
 
-    .tab-content { padding: 16px; max-width: 1400px; margin: 0 auto; background: rgba(30, 34, 40, 0.95); border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.25); }
-    h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; color: #ffb300; text-shadow: 0 2px 8px #000a; display: flex; align-items: center; justify-content: center; gap: 12px; }
+    .tab-content { padding: 16px; max-width: 1400px; margin: 0 auto; background: rgba(82, 90, 114, 0.93); border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.25); }
+    h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; color: #6c5ce7; text-shadow: 0 2px 8px #000a; display: flex; align-items: center; justify-content: center; gap: 12px; }
     .header { margin-bottom: 16px; }
-    .header p { color: #b0b0b0; font-size: 14px; text-align: center; }
+    .header p { color: #2c2f45; font-size: 14px; text-align: center; }
 
     /* ── Calendar styles ───────────────────────────── */
     .cal-toolbar {
@@ -39,26 +39,26 @@
       gap: 12px; margin-bottom: 16px; flex-wrap: wrap;
     }
     .cal-toolbar button {
-      background: #232526; border: 1px solid #444; color: #e0e0e0;
+      background: #f0f2f5; border: 1px solid #c0c4d8; color: #2c2f45;
       border-radius: 6px; padding: 8px 14px; font-size: 14px;
       cursor: pointer; transition: all 0.2s;
     }
-    .cal-toolbar button:hover { background: #333; color: #ffb300; border-color: #ffb300; }
-    .cal-month-label { font-size: 20px; font-weight: 700; color: #ffb300; min-width: 200px; text-align: center; }
+    .cal-toolbar button:hover { background: #e2e5ef; color: #6c5ce7; border-color: #6c5ce7; }
+    .cal-month-label { font-size: 20px; font-weight: 700; color: #6c5ce7; min-width: 200px; text-align: center; }
     .cal-today-btn { font-weight: 600; }
 
     .cal-grid {
       display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px;
-      background: #333; border: 1px solid #444; border-radius: 10px; overflow: hidden;
+      background: #c0c4d8; border: 1px solid #c0c4d8; border-radius: 10px; overflow: hidden;
     }
-    .cal-dow { background: #1a1d21; color: #ffb300; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 4px; text-align: center; }
-    .cal-day { background: #232526; min-height: 90px; padding: 4px; text-align: left; position: relative; transition: background 0.15s; cursor: default; }
-    .cal-day:hover { background: #2a2d30; }
-    .cal-day.other-month { background: #1a1c1e; }
-    .cal-day.other-month .cal-day-num { color: #555; }
-    .cal-day.today { box-shadow: inset 0 0 0 2px #ffb300; }
-    .cal-day-num { display: inline-block; font-size: 13px; font-weight: 600; color: #e0e0e0; padding: 2px 6px; border-radius: 4px; margin-bottom: 2px; }
-    .cal-day.today .cal-day-num { background: #ffb300; color: #232526; }
+    .cal-dow { background: #e2e5ef; color: #6c5ce7; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 4px; text-align: center; }
+    .cal-day { background: #f0f2f5; min-height: 90px; padding: 4px; text-align: left; position: relative; transition: background 0.15s; cursor: default; }
+    .cal-day:hover { background: #e2e5ef; }
+    .cal-day.other-month { background: #dde0ef; }
+    .cal-day.other-month .cal-day-num { color: #999; }
+    .cal-day.today { box-shadow: inset 0 0 0 2px #6c5ce7; }
+    .cal-day-num { display: inline-block; font-size: 13px; font-weight: 600; color: #2c2f45; padding: 2px 6px; border-radius: 4px; margin-bottom: 2px; }
+    .cal-day.today .cal-day-num { background: #6c5ce7; color: #fff; }
 
     .cal-event { display: block; font-size: 11px; padding: 2px 5px; margin: 1px 0; border-radius: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; line-height: 1.4; font-weight: 500; transition: filter 0.15s; }
     .cal-event:hover { filter: brightness(1.2); }
@@ -72,60 +72,60 @@
     .cal-event.color-pink   { background: #ec407a; color: #fff; }
     .cal-event.color-teal   { background: #26a69a; color: #fff; }
 
-    .cal-more { font-size: 10px; color: #ffb300; padding: 1px 4px; cursor: pointer; font-weight: 600; }
+    .cal-more { font-size: 10px; color: #6c5ce7; padding: 1px 4px; cursor: pointer; font-weight: 600; }
     .cal-more:hover { text-decoration: underline; }
 
     /* ── Event detail popup ──────────────────────── */
     .event-popup-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 8000; align-items: center; justify-content: center; }
     .event-popup-overlay.open { display: flex; }
-    .event-popup { background: #232526; border: 1px solid #444; border-radius: 12px; padding: 24px; max-width: 420px; width: 90vw; box-shadow: 0 8px 32px rgba(0,0,0,0.5); text-align: left; }
-    .event-popup h3 { color: #ffb300; margin-bottom: 12px; font-size: 18px; }
-    .event-popup .ep-row { margin-bottom: 8px; font-size: 14px; color: #e0e0e0; }
-    .event-popup .ep-label { font-weight: 600; color: #ffb300; }
-    .event-popup .ep-desc { margin-top: 12px; background: #1a1d21; border-radius: 6px; padding: 10px; font-size: 13px; color: #ccc; line-height: 1.5; white-space: pre-wrap; }
-    .event-popup .ep-close { margin-top: 16px; display: inline-block; padding: 8px 20px; background: #ffb300; color: #232526; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
+    .event-popup { background: #f0f2f5; border: 1px solid #c0c4d8; border-radius: 12px; padding: 24px; max-width: 420px; width: 90vw; box-shadow: 0 8px 32px rgba(0,0,0,0.3); text-align: left; }
+    .event-popup h3 { color: #6c5ce7; margin-bottom: 12px; font-size: 18px; }
+    .event-popup .ep-row { margin-bottom: 8px; font-size: 14px; color: #2c2f45; }
+    .event-popup .ep-label { font-weight: 600; color: #6c5ce7; }
+    .event-popup .ep-desc { margin-top: 12px; background: #e2e5ef; border-radius: 6px; padding: 10px; font-size: 13px; color: #2c2f45; line-height: 1.5; white-space: pre-wrap; }
+    .event-popup .ep-close { margin-top: 16px; display: inline-block; padding: 8px 20px; background: #6c5ce7; color: #fff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
     .event-popup .ep-color-dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
 
     /* ── Day detail popup ────────────────────────── */
     .day-popup-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 7500; align-items: center; justify-content: center; }
     .day-popup-overlay.open { display: flex; }
-    .day-popup { background: #232526; border: 1px solid #444; border-radius: 12px; padding: 24px; max-width: 380px; width: 90vw; box-shadow: 0 8px 32px rgba(0,0,0,0.5); text-align: left; max-height: 80vh; overflow-y: auto; }
-    .day-popup h3 { color: #ffb300; margin-bottom: 12px; font-size: 18px; }
+    .day-popup { background: #f0f2f5; border: 1px solid #c0c4d8; border-radius: 12px; padding: 24px; max-width: 380px; width: 90vw; box-shadow: 0 8px 32px rgba(0,0,0,0.3); text-align: left; max-height: 80vh; overflow-y: auto; }
+    .day-popup h3 { color: #6c5ce7; margin-bottom: 12px; font-size: 18px; }
     .day-popup .dp-event { padding: 8px 10px; margin-bottom: 6px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; transition: filter 0.15s; }
     .day-popup .dp-event:hover { filter: brightness(1.2); }
     .day-popup .dp-time { font-size: 11px; opacity: 0.85; margin-top: 2px; }
-    .day-popup .dp-close { margin-top: 12px; display: inline-block; padding: 8px 20px; background: #ffb300; color: #232526; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
+    .day-popup .dp-close { margin-top: 12px; display: inline-block; padding: 8px 20px; background: #6c5ce7; color: #fff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
 
     /* ── Upcoming sidebar ────────────────────────── */
     .cal-layout { display: flex; gap: 16px; align-items: flex-start; }
     .cal-main { flex: 1; min-width: 0; }
-    .cal-sidebar { width: 280px; flex-shrink: 0; background: #1a1d21; border: 1px solid #444; border-radius: 10px; padding: 16px; text-align: left; max-height: 600px; overflow-y: auto; }
-    .cal-sidebar h3 { color: #ffb300; font-size: 15px; margin-bottom: 12px; }
+    .cal-sidebar { width: 280px; flex-shrink: 0; background: #e2e5ef; border: 1px solid #c0c4d8; border-radius: 10px; padding: 16px; text-align: left; max-height: 600px; overflow-y: auto; }
+    .cal-sidebar h3 { color: #6c5ce7; font-size: 15px; margin-bottom: 12px; }
     .cal-sidebar-event { padding: 8px 10px; margin-bottom: 8px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: filter 0.15s; }
     .cal-sidebar-event:hover { filter: brightness(1.2); }
     .cal-sidebar-event .se-title { font-weight: 600; font-size: 13px; }
     .cal-sidebar-event .se-date { opacity: 0.8; margin-top: 2px; }
-    .cal-sidebar-empty { color: #666; font-size: 13px; font-style: italic; }
+    .cal-sidebar-empty { color: #6b6f85; font-size: 13px; font-style: italic; }
 
     @media (max-width: 900px) { .cal-layout { flex-direction: column; } .cal-sidebar { width: 100%; max-height: 300px; } }
     @media (max-width: 600px) { .cal-day { min-height: 60px; } .cal-event { font-size: 9px; padding: 1px 3px; } .cal-day-num { font-size: 11px; } .cal-dow { font-size: 10px; padding: 6px 2px; } .cal-month-label { font-size: 16px; min-width: 160px; } }
 
     /* ── Sticky Navigation Bar ───────────────────── */
-    .tab-nav { background: rgba(30, 34, 40, 0.95); border-bottom: 1px solid #444; box-shadow: 0 2px 8px rgba(0,0,0,0.25); position: sticky; top: 0; z-index: 9999; width: 100%; left: 0; right: 0; overflow: visible; }
+    .tab-nav { background: rgba(70, 80, 105, 0.92); border-bottom: 1px solid #c0c4d8; box-shadow: 0 2px 8px rgba(0,0,0,0.25); position: sticky; top: 0; z-index: 9999; width: 100%; left: 0; right: 0; overflow: visible; }
     .tab-nav-container { max-width: 1400px; margin: 0 auto; display: flex; align-items: center; padding: 0 16px; overflow: visible; flex-wrap: wrap; }
-    .nav-brand { font-size: 20px; font-weight: 700; color: #ffb300; padding: 16px 0; margin-right: 32px; white-space: nowrap; display: flex; align-items: center; gap: 8px; text-shadow: 0 2px 8px #000a; }
+    .nav-brand { font-size: 20px; font-weight: 700; color: #6c5ce7; padding: 16px 0; margin-right: 32px; white-space: nowrap; display: flex; align-items: center; gap: 8px; text-shadow: 0 2px 8px #000a; }
     .nav-brand img { height: 32px; width: auto; }
     .tab-buttons { display: flex; gap: 4px; flex: 1; overflow-x: auto; overflow-y: hidden; align-items: center; height: 100px; }
-    .tab-btn { padding: 12px 16px; background: none; border: none; color: #e0e0e0; font-size: 28px; font-weight: 500; border-bottom: 3px solid transparent; transition: all 0.2s; white-space: nowrap; text-decoration: none; display: block; cursor: pointer; position: relative; }
-    .tab-btn:hover { color: #ffb300; background: #232526; }
-    .tab-btn.active { color: #ffb300; border-bottom-color: #ffb300; }
-    .tab-btn[title]:hover::after { content: attr(title); position: absolute; top: -42px; left: 50%; transform: translateX(-50%); background: #232526; color: #ffb300; padding: 6px 12px; border-radius: 4px; font-size: 12px; white-space: nowrap; z-index: 1001; border: 1px solid #444; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+    .tab-btn { padding: 12px 16px; background: none; border: none; color: #2c2f45; font-size: 28px; font-weight: 500; border-bottom: 3px solid transparent; transition: all 0.2s; white-space: nowrap; text-decoration: none; display: block; cursor: pointer; position: relative; }
+    .tab-btn:hover { color: #6c5ce7; background: #f0f2f5; }
+    .tab-btn.active { color: #6c5ce7; border-bottom-color: #6c5ce7; }
+    .tab-btn[title]:hover::after { content: attr(title); position: absolute; top: -42px; left: 50%; transform: translateX(-50%); background: #f0f2f5; color: #6c5ce7; padding: 6px 12px; border-radius: 4px; font-size: 12px; white-space: nowrap; z-index: 1001; border: 1px solid #c0c4d8; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
     .tab-btn .tab-icon { display: block; margin: 0 auto; height: 40px; width: auto; font-size: 16px; line-height: 1.2; font-weight: 500; white-space: nowrap; filter: drop-shadow(0 2px 8px #000a); }
     .tab-icon-emoji { display: block; margin: 0 auto; font-size: 32px; line-height: 40px; height: 40px; filter: drop-shadow(0 2px 8px #000a); }
     .tab-label.mobile-only { display: none; }
     .tab-icon.desktop-only { display: block; margin: 0 auto; height: 40px; width: auto; }
     .hamburger { display: none; flex-direction: column; gap: 4px; background: none; border: none; cursor: pointer; padding: 8px; }
-    .hamburger span { display: block; width: 24px; height: 3px; background: #ffb300; border-radius: 2px; transition: all 0.2s; }
+    .hamburger span { display: block; width: 24px; height: 3px; background: #6c5ce7; border-radius: 2px; transition: all 0.2s; }
 
     @media (max-width: 800px) {
       .tab-nav { position: fixed; top: 0; left: 0; right: 0; width: 100%; z-index: 9999; }
@@ -133,9 +133,9 @@
       .nav-brand { flex: 1; margin-right: 8px; font-size: 16px; padding: 8px 0; }
       .nav-brand img { height: 24px; width: 24px; }
       .hamburger { display: flex; order: 2; }
-      .tab-buttons { flex-direction: column; align-items: stretch; max-height: 60vh; overflow-y: auto; background: #232526; position: absolute; top: 60px; left: 0; right: 0; width: 100%; z-index: 10000; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); display: none; order: 10; height: auto; }
+      .tab-buttons { flex-direction: column; align-items: stretch; max-height: 60vh; overflow-y: auto; background: #f0f2f5; position: absolute; top: 60px; left: 0; right: 0; width: 100%; z-index: 10000; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); display: none; order: 10; height: auto; }
       .tab-buttons.open { display: flex; }
-      .tab-btn { font-size: 18px; padding: 18px 24px; border-bottom: 1px solid #444; display: flex; align-items: center; justify-content: flex-start; background: none; height: auto; }
+      .tab-btn { font-size: 18px; padding: 18px 24px; border-bottom: 1px solid #c0c4d8; display: flex; align-items: center; justify-content: flex-start; background: none; height: auto; }
       .tab-btn:last-child { border-bottom: none; }
       .tab-label.mobile-only { display: inline; }
       .tab-icon.desktop-only { display: none; }
@@ -156,7 +156,7 @@
 <body>
   <!-- Google Translate Widget -->
   <div id="google_translate_element" style="position:fixed;bottom:8px;right:8px;z-index:7000;"></div>
-  <button id="translateToggleBtn" type="button" aria-label="Toggle translation" style="position:fixed;bottom:8px;right:8px;z-index:7001;display:none;align-items:center;justify-content:center;width:38px;height:38px;border:1px solid #444;border-radius:8px;background:#232526;color:#ffb300;font-size:18px;cursor:pointer;">🌐</button>
+  <button id="translateToggleBtn" type="button" aria-label="Toggle translation" style="position:fixed;bottom:8px;right:8px;z-index:7001;display:none;align-items:center;justify-content:center;width:38px;height:38px;border:1px solid #c0c4d8;border-radius:8px;background:#f0f2f5;color:#6c5ce7;font-size:18px;cursor:pointer;">🌐</button>
   <style>
     @media (max-width: 800px) {
       #google_translate_element { max-width:0;overflow:hidden;opacity:0;pointer-events:none;transition:max-width .2s,opacity .2s; }
@@ -194,7 +194,7 @@
     function showGoogleLogin() {
       var d = document.createElement('div'); d.id='login-overlay';
       d.style='position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.8);z-index:9999;display:flex;align-items:center;justify-content:center;';
-      d.innerHTML='<div style="background:#232526;padding:32px 24px;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.5);display:flex;flex-direction:column;align-items:center;gap:16px;min-width:300px;border:1px solid #444;"><h2 style="margin-bottom:8px;color:#ffb300;">Sign in to Manage</h2><p style="font-size:14px;color:#e0e0e0;text-align:center;margin:0 0 8px 0;">Use your Google account to access management features</p><div id="g_id_onload" data-client_id="47674606892-0m90hd0cd01kijo69ssuqtn1j3igp32i.apps.googleusercontent.com" data-callback="onGoogleSignIn" data-auto_prompt="false" data-ux_mode="popup"></div><div id="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="signin" data-shape="rectangular" data-logo_alignment="left"></div><div style="width:100%;height:1px;background:#444;margin:8px 0;"></div><button id="guest-btn" style="width:100%;margin-top:8px;padding:12px 20px;border:1px solid #444;background:#232526;color:#ffb300;font-size:15px;font-weight:600;border-radius:6px;cursor:pointer;">Continue as Guest (Read-Only)</button><div id="login-error" style="color:#ff5252;font-size:13px;display:none;"></div></div>';
+      d.innerHTML='<div style="background:#f0f2f5;padding:32px 24px;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.3);display:flex;flex-direction:column;align-items:center;gap:16px;min-width:300px;border:1px solid #c0c4d8;"><h2 style="margin-bottom:8px;color:#6c5ce7;">Sign in to Manage</h2><p style="font-size:14px;color:#2c2f45;text-align:center;margin:0 0 8px 0;">Use your Google account to access management features</p><div id="g_id_onload" data-client_id="47674606892-0m90hd0cd01kijo69ssuqtn1j3igp32i.apps.googleusercontent.com" data-callback="onGoogleSignIn" data-auto_prompt="false" data-ux_mode="popup"></div><div id="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="signin" data-shape="rectangular" data-logo_alignment="left"></div><div style="width:100%;height:1px;background:#c0c4d8;margin:8px 0;"></div><button id="guest-btn" style="width:100%;margin-top:8px;padding:12px 20px;border:1px solid #c0c4d8;background:#f0f2f5;color:#6c5ce7;font-size:15px;font-weight:600;border-radius:6px;cursor:pointer;">Continue as Guest (Read-Only)</button><div id="login-error" style="color:#ff5252;font-size:13px;display:none;"></div></div>';
       document.body.appendChild(d);
       setTimeout(function(){
         var gb=document.getElementById('guest-btn'); if(gb){gb.onclick=function(){document.getElementById('login-overlay').remove();setReadOnlyMode(true);try{localStorage.removeItem(AUTH_KEY)}catch(e){}try{localStorage.removeItem(AUTH_EMAIL_KEY)}catch(e){}updateSignedInBadge(null);};}
@@ -225,7 +225,7 @@
       if(token&&email){setReadOnlyMode(false);updateSignedInBadge(email);setRestricted(true);var bt=document.getElementById('bankTabBtn');if(bt)bt.style.display='flex';}
       else{setReadOnlyMode(true);updateSignedInBadge(null);setRestricted(false);var bt2=document.getElementById('bankTabBtn');if(bt2)bt2.style.display='none';
         var nav=document.querySelector('.tab-nav-container');
-        if(nav&&!document.getElementById('signInManageBtn')){var btn=document.createElement('button');btn.id='signInManageBtn';btn.textContent='🔑 Sign in to Manage';btn.style='margin-left:16px;padding:8px 18px;background:#1a73e8;color:#fff;border:none;border-radius:5px;font-size:14px;font-weight:600;cursor:pointer;transition:background 0.2s;';btn.onclick=showGoogleLogin;nav.appendChild(btn);}
+        if(nav&&!document.getElementById('signInManageBtn')){var btn=document.createElement('button');btn.id='signInManageBtn';btn.textContent='🔑 Sign in to Manage';btn.style='margin-left:16px;padding:8px 18px;background:#6c5ce7;color:#fff;border:none;border-radius:5px;font-size:14px;font-weight:600;cursor:pointer;transition:background 0.2s;';btn.onclick=showGoogleLogin;nav.appendChild(btn);}
       }
       // Hamburger
       var hb=document.getElementById('navHamburger'),nt=document.getElementById('navTabs');
@@ -259,7 +259,7 @@
   <!-- Main Content -->
   <div class="tab-content active">
     <div class="header">
-      <h1>📅 Clan Calendar</h1>
+      <h1><img src="calendar.png" alt="" style="height:32px;width:32px;vertical-align:middle;"> Clan Calendar</h1>
       <p>Schedule and track clan events, wars, and activities</p>
     </div>
 
@@ -373,7 +373,7 @@
       document.getElementById('epTitle').textContent = ev.title;
       document.getElementById('epDate').textContent = formatDate(ev.date) + (ev.endDate ? ' — ' + formatDate(ev.endDate) : '');
       document.getElementById('epTime').textContent = ev.time || 'All day';
-      document.getElementById('epCategory').innerHTML = '<span class="ep-color-dot" style="background:' + (COLOR_HEX[ev.color] || '#ffb300') + '"></span>' + (ev.category || '—');
+      document.getElementById('epCategory').innerHTML = '<span class="ep-color-dot" style="background:' + (COLOR_HEX[ev.color] || '#6c5ce7') + '"></span>' + (ev.category || '—');
       var desc = document.getElementById('epDesc'); if (ev.description) { desc.textContent = ev.description; desc.style.display = 'block'; } else { desc.style.display = 'none'; }
       document.getElementById('eventPopupOverlay').classList.add('open');
     };
@@ -381,7 +381,7 @@
     window.showDayPopup = function(dateStr) {
       var evts = getEventsForDate(dateStr);
       document.getElementById('dpTitle').textContent = formatDate(dateStr);
-      var html = ''; if (evts.length === 0) html = '<div style="color:#666;font-style:italic;padding:8px 0;">No events on this day</div>';
+      var html = ''; if (evts.length === 0) html = '<div style="color:#6b6f85;font-style:italic;padding:8px 0;">No events on this day</div>';
       for (var i = 0; i < evts.length; i++) { var ev = evts[i]; html += '<div class="dp-event color-' + ev.color + '" onclick="closeDayPopup();showEventPopup(' + EVENTS.indexOf(ev) + ')">' + esc(ev.title) + (ev.time ? '<div class="dp-time">' + ev.time + '</div>' : '') + '</div>'; }
       document.getElementById('dpEvents').innerHTML = html;
       document.getElementById('dayPopupOverlay').classList.add('open');
