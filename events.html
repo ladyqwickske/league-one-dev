@@ -749,8 +749,16 @@
       <!-- MANAGE EVENTS TAB -->
       <div id="manageTab" class="tab-content active">
         <h3 style="margin:0 0 12px 0;">All Events</h3>
-        <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;">
+        <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; align-items:center;">
           <button class="btn" onclick="EventsTab.loadEvents()">🔄 Refresh</button>
+          <button class="btn" id="generateEventsBtn" onclick="EventsTab.generateEvents()" style="background:#4CAF50;">📅 Generate Upcoming Events</button>
+          <select id="generateDaysSelect" style="padding:8px; border-radius:4px; border:1px solid #444; background:#3a3a4e; color:#e0e0e0; font-size:13px;">
+            <option value="7">Next 7 days</option>
+            <option value="14">Next 14 days</option>
+            <option value="30" selected>Next 30 days</option>
+            <option value="60">Next 60 days</option>
+          </select>
+          <span id="generateStatus" style="font-size:13px;"></span>
         </div>
         <div class="table-container">
           <div id="eventsLoading" class="loading"><div class="spinner"></div><p>Loading events...</p></div>
@@ -2029,6 +2037,44 @@
         }).catch(error => { alert('Error: ' + error.message); });
       }
 
+      function generateEvents() {
+        const btn = document.getElementById('generateEventsBtn');
+        const status = document.getElementById('generateStatus');
+        const daysAhead = document.getElementById('generateDaysSelect').value;
+        btn.disabled = true;
+        btn.textContent = '⏳ Generating...';
+        status.textContent = '';
+        status.style.color = '';
+        fetch(window.GAS_WEB_APP_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'generateCalendarEvents', daysAhead: Number(daysAhead) })
+        })
+        .then(res => res.json())
+        .then(result => {
+          btn.disabled = false;
+          btn.textContent = '\uD83D\uDCC5 Generate Upcoming Events';
+          if (result && result.success) {
+            const parts = [];
+            if (result.created && result.created.length > 0) parts.push('✅ Created ' + result.created.length + ': ' + result.created.join(', '));
+            if (result.skipped && result.skipped.length > 0) parts.push('⏭️ Skipped ' + result.skipped.length + ' existing');
+            if (result.errors && result.errors.length > 0) parts.push('❌ ' + result.errors.length + ' error(s)');
+            status.innerHTML = parts.join('<br>') || 'No events to generate in this range.';
+            status.style.color = (result.errors && result.errors.length > 0) ? '#ff5252' : '#4CAF50';
+            loadEvents();
+          } else {
+            status.textContent = '❌ ' + (result?.message || 'Generation failed.');
+            status.style.color = '#ff5252';
+          }
+        })
+        .catch(error => {
+          btn.disabled = false;
+          btn.textContent = '\uD83D\uDCC5 Generate Upcoming Events';
+          status.textContent = '❌ Error: ' + error.message;
+          status.style.color = '#ff5252';
+        });
+      }
+
       function viewEventParticipation(eventName) {
         const evt = eventsData.find(e => e.eventName === eventName);
         if (!evt) return;
@@ -2050,7 +2096,7 @@
         }
       }
 
-      return { init, switchTab, loadEvents, onChestEventSelected, onManualEventSelected, onTroopEventSelected, submitManualEntry, submitTroopEntry, calculateManualNonParticipants, calculateTroopNonParticipants, calculateChestParticipation, submitCreateEvent, updateEventTypeMethod, submitAddEventType, renderEventTypesTable, cancelEditEventType, addTroopTargetRow, removeTroopTargetRow, editEventType, editEvent, deleteEvent, deleteEventType, viewEventParticipation, sortTable, sortManualTable };
+      return { init, switchTab, loadEvents, generateEvents, onChestEventSelected, onManualEventSelected, onTroopEventSelected, submitManualEntry, submitTroopEntry, calculateManualNonParticipants, calculateTroopNonParticipants, calculateChestParticipation, submitCreateEvent, updateEventTypeMethod, submitAddEventType, renderEventTypesTable, cancelEditEventType, addTroopTargetRow, removeTroopTargetRow, editEventType, editEvent, deleteEvent, deleteEventType, viewEventParticipation, sortTable, sortManualTable };
     })();
   </script>
 </body>

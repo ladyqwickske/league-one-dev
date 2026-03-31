@@ -77,6 +77,7 @@
     .cal-event.color-crimson  { background: #d32f2f; color: #fff; }
     .cal-event.color-gold    { background: #ffd700; color: #232526; }
     .cal-event.color-silver  { background: #b0bec5; color: #232526; }
+    .cal-event.color-caramel  { background: #c68642; color: #fff; }
 
     .cal-more { font-size: 10px; color: #6c5ce7; padding: 1px 4px; cursor: pointer; font-weight: 600; }
     .cal-more:hover { text-decoration: underline; }
@@ -217,7 +218,7 @@
         var email=td.email;
         var r=await fetch(BACKEND_VERIFY_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'verifyUserPermission',email:email})});
         var data=await r.json();
-        if(data.isAllowedEditor){try{localStorage.setItem(AUTH_KEY,idToken)}catch(e){}try{localStorage.setItem(AUTH_EMAIL_KEY,email)}catch(e){}setReadOnlyMode(false);updateSignedInBadge(email);var ov=document.getElementById('login-overlay');if(ov)ov.style.display='none';}
+        if(data.isAllowedEditor){try{localStorage.setItem(AUTH_KEY,'1')}catch(e){}try{localStorage.setItem(AUTH_EMAIL_KEY,email)}catch(e){}setReadOnlyMode(false);updateSignedInBadge(email);var ov=document.getElementById('login-overlay');if(ov)ov.style.display='none';setTimeout(function(){location.reload();},200);}
         else{setReadOnlyMode(true);var ed=document.getElementById('login-error');if(ed){ed.style.display='block';ed.textContent='Your account does not have editor access';}}
       }catch(err){console.error(err);var ed2=document.getElementById('login-error');if(ed2){ed2.style.display='block';ed2.textContent='Sign-in failed: '+err.message;}}
     };
@@ -311,15 +312,17 @@
   <script>
   (function() {
     'use strict';
-    var COLORS = ['amber','blue','green','red','purple','cyan','orange','pink','teal','indigo','lime','brown','crimson','gold','silver'];
-    var COLOR_HEX = {amber:'#ffb300',blue:'#42a5f5',green:'#66bb6a',red:'#ef5350',purple:'#ab47bc',cyan:'#26c6da',orange:'#ff7043',pink:'#ec407a',teal:'#26a69a',indigo:'#5c6bc0',lime:'#9ccc65',brown:'#8d6e63',crimson:'#d32f2f',gold:'#ffd700',silver:'#b0bec5'};
+    var COLORS = ['amber','blue','green','red','purple','cyan','orange','pink','teal','indigo','lime','brown','crimson','gold','silver','caramel'];
+    var COLOR_HEX = {amber:'#ffb300',blue:'#42a5f5',green:'#66bb6a',red:'#ef5350',purple:'#ab47bc',cyan:'#26c6da',orange:'#ff7043',pink:'#ec407a',teal:'#26a69a',indigo:'#5c6bc0',lime:'#9ccc65',brown:'#8d6e63',crimson:'#d32f2f',gold:'#ffd700',silver:'#b0bec5',caramel:'#c68642'};
 
     /* ── Recurring event definitions (from Google Calendar ICS) ─── */
     var RECURRING = [
       { title: 'Doomsday',          firstStart: '2026-03-01', duration: 1, interval: 6,  color: 'teal',    category: 'Daily Event', description: 'Doomsday — recurring every 6 days.' },
       { title: 'Arachne\'s Swarm',  firstStart: '2026-03-02', duration: 1, interval: 6,  color: 'purple',  category: 'Daily Event', description: 'Arachne\'s Swarm — recurring every 6 days.' },
       { title: 'Ruthless Slaughter',firstStart: '2026-03-03', duration: 1, interval: 6,  color: 'silver',  category: 'Daily Event', description: 'Ruthless Slaughter — recurring every 6 days.' },
-      { title: 'Ancients',          firstStart: '2026-03-04', duration: 1, interval: 6,  color: 'amber',  category: 'Daily Event', description: 'Ancients — recurring every 6 days.' },
+      { title: 'Crypt Start',firstStart: '2026-03-03', duration: 1, interval: 6, color: 'caramel', category: 'Crypting', description: 'Crypting period starts — same day as Ruthless Slaughter.' },
+      { title: 'Crypt End',  firstStart: '2026-03-08', duration: 1, interval: 6, color: 'caramel', category: 'Crypting', description: 'Crypting period ends — the day before the next Ruthless Slaughter.' },
+      { title: 'Ancients',          firstStart: '2026-03-04', duration: 1, interval: 6,  color: 'amber',   category: 'Daily Event', description: 'Ancients — recurring every 6 days.' },
       { title: 'Thirst for Battle', firstStart: '2026-03-05', duration: 1, interval: 6,  color: 'cyan',   category: 'Daily Event', description: 'Thirst for Battle — recurring every 6 days.' },
       { title: 'The Great Hunt',    firstStart: '2026-03-06', duration: 1, interval: 6,  color: 'green',  category: 'Daily Event', description: 'The Great Hunt — recurring every 6 days.' },
       { title: 'KvK',               firstStart: '2026-03-05', duration: 1, interval: 24, color: 'pink',   category: 'Major Event', description: 'Kingdom vs Kingdom — recurring every 24 days.' },
@@ -329,6 +332,7 @@
       { title: 'Shadow Invasion',   firstStart: '2026-03-23', duration: 2, interval: 24, color: 'brown',   category: 'Major Event', description: 'Shadow Invasion — 2-day event recurring every 24 days.' },
       { title: 'HellForge',         firstStart: '2026-03-29', duration: 2, interval: 24, color: 'crimson', category: 'Major Event', description: 'HellForge — 2-day event recurring every 24 days.' },
       { title: 'Olympus',           firstStart: '2026-03-29', duration: 5, interval: 24, color: 'gold',    category: 'Major Event', description: 'Olympus — 5-day event recurring every 24 days.' },
+      { title: 'Ragnarok',          firstStart: '2026-04-04', duration: 2, interval: 24, color: 'lime',    category: 'Major Event', description: 'Ragnarok — 2-day event starting the day after the first Ancients following Olympus.' },
     ];
 
     function expandRecurring(rangeStart, rangeEnd) {

@@ -5,7 +5,7 @@
 const SITE_CONFIG = {
   // Clan Identity
   clanName: 'cCc League One',
-  clanAbbr: 'ccc',
+  clanAbbr: 'clo',
 
   // Progress ranking weights (must sum to 100)
   rankingWeights: {

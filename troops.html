@@ -887,6 +887,11 @@
             <input type="checkbox" id="troopIsStarting" />
             <label for="troopIsStarting" style="margin: 0; font-weight: normal; text-transform: none; color: #2c2f45;">Starting</label>
           </div>
+          <div class="field">
+            <label for="troopEntryDate">Date</label>
+            <input type="date" id="troopEntryDate" />
+            <small style="color:#999;font-size:10px;">Leave empty for today</small>
+          </div>
         </div>
         <div style="display: flex; gap: 8px; margin-top: 12px;">
           <button type="button" class="btn" onclick="TroopsTab.submitTroopEntry()">➕ Add Entry</button>
@@ -953,6 +958,11 @@
             <div class="field" style="min-width: 160px;">
               <label for="initialApplyLevel">Apply level to all</label>
               <input type="number" id="initialApplyLevel" min="0" placeholder="45" />
+            </div>
+            <div class="field" style="min-width: 160px;">
+              <label for="initialTroopDate">Date</label>
+              <input type="date" id="initialTroopDate" />
+              <small style="color:#999;font-size:10px;">Leave empty for today</small>
             </div>
             <button type="button" class="btn btn-secondary" onclick="TroopsTab.applyInitialLevelToAll()">Apply</button>
             <button type="button" class="btn" onclick="TroopsTab.submitInitialTroopEntry()">✅ Save Initial Troops</button>
@@ -1351,6 +1361,9 @@
           return;
         }
 
+        const dateInput = document.getElementById('troopEntryDate').value;
+        const customTimestamp = dateInput ? dateInput + 'T00:00:00.000Z' : undefined;
+
         fetch(window.GAS_WEB_APP_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -1359,7 +1372,8 @@
             playerName,
             troopType,
             troopLevel: parseInt(troopLevel),
-            notes
+            notes,
+            customTimestamp
           })
         })
           .then(res => res.json())
@@ -1384,6 +1398,7 @@
         document.getElementById('troopLevel').value = '';
         document.getElementById('troopResearch').value = '';
         document.getElementById('troopIsStarting').checked = false;
+        document.getElementById('troopEntryDate').value = '';
         document.getElementById('troopPlayerHistoryContainer').style.display = 'none';
         document.getElementById('troopEntryMessage').className = 'status';
       }
@@ -1403,6 +1418,7 @@
         document.getElementById('initialTroopIsStarting').checked = true;
         document.getElementById('initialTroopFillZeros').checked = true;
         document.getElementById('initialApplyLevel').value = '';
+        document.getElementById('initialTroopDate').value = '';
         ['G', 'M', 'S', 'E', 'C'].forEach(type => {
           const input = document.getElementById(`initialTroop${type}`);
           if (input) input.value = '';
@@ -1456,6 +1472,9 @@
         // Send requests sequentially to avoid GAS web app concurrency issues
         showInitialStatus('Saving entries...', 'ok');
         
+        const dateInput = document.getElementById('initialTroopDate').value;
+        const customTimestamp = dateInput ? dateInput + 'T00:00:00.000Z' : undefined;
+
         (async () => {
           try {
             let successCount = 0;
@@ -1465,7 +1484,8 @@
                 playerName,
                 troopType: entry.type,
                 troopLevel: entry.level,
-                notes
+                notes,
+                customTimestamp
               };
               console.log(`[DEBUG] Sending payload for type ${entry.type}:`, payload);
               

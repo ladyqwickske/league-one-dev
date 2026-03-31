@@ -548,7 +548,9 @@
 		<div class="header">
 			<h1><img src="competition.png" alt="Competition" style="height: 64px;"> Competition Leaderboard</h1>
 			<p>Ranking of the participating members in the Crypt Competition.</p>
-			<div class="final-notice">This competition has concluded. The results shown below are the final results.</div>
+			<div class="final-notice" id="competition-notice">
+				<span id="competition-notice-text">A new competition will start today at reset — in <strong id="resetCountdown">--:--:--</strong></span>
+			</div>
 		</div>
 
 		<div class="actions">
@@ -568,19 +570,30 @@
 					<tr>
 						<th>Rank</th>
 						<th>Member</th>
+						<th>Starting Bal.</th>
 						<th>Total Points</th>
 						<th>Valid Chests</th>
 						<th>Last Entry</th>
 					</tr>
 				</thead>
 				<tbody id="leaderboardBody">
-					<tr><td colspan="5" class="empty">Loading competition leaderboard...</td></tr>
+					<tr><td colspan="6" class="empty">Loading competition leaderboard...</td></tr>
 				</tbody>
 			</table>
 		</div>
 	</div>
 
 	<script>
+		// =====================================================================
+		// COMPETITION CONFIGURATION — edit these two values to update the schedule
+		// Belgium time → UTC conversion:
+		//   Winter (Oct–Mar): Belgium = UTC+1  →  e.g. 18:00 Belgium = 17:00 UTC
+		//   Summer (Mar–Oct): Belgium = UTC+2  →  e.g. 18:00 Belgium = 16:00 UTC
+		// =====================================================================
+		const COMPETITION_START_UTC = '2026-03-22T17:00:00Z'; // 18:00 Belgian time (CET = UTC+1)
+		const COMPETITION_DURATION_HOURS = 24;                 // competition length in hours
+		// =====================================================================
+
 		function escapeHtml(text) {
 			return String(text || '')
 				.replace(/&/g, '&amp;')
@@ -600,7 +613,7 @@
 
 		async function loadCompetitionLeaderboard() {
 			const tbody = document.getElementById('leaderboardBody');
-			tbody.innerHTML = '<tr><td colspan="5" class="empty">Loading competition leaderboard...</td></tr>';
+			tbody.innerHTML = '<tr><td colspan="6" class="empty">Loading competition leaderboard...</td></tr>';
 			const apiUrl = window.CLOUDFLARE_WORKER_URL || window.GAS_WEB_APP_URL;
 
 			try {
@@ -619,7 +632,7 @@
 				document.getElementById('updatedAt').textContent = (data && data.lastCalculatedUtc) ? data.lastCalculatedUtc : 'Never';
 
 				if (!leaderboard.length) {
-					tbody.innerHTML = '<tr><td colspan="5" class="empty">No leaderboard data available yet.</td></tr>';
+					tbody.innerHTML = '<tr><td colspan="6" class="empty">No leaderboard data available yet.</td></tr>';
 					document.getElementById('leaderName').textContent = '-';
 					document.getElementById('leaderPoints').textContent = '-';
 					document.getElementById('qualifiedCount').textContent = '0';
@@ -630,6 +643,7 @@
 					<tr>
 						<td class="rank">${index + 1}</td>
 						<td class="player">${escapeHtml(entry.player)}</td>
+						<td class="points">${Number(entry.startingBalance || 0).toLocaleString()}</td>
 						<td class="points">${Number(entry.totalPoints || 0).toLocaleString()}</td>
 						<td>${Number(entry.totalValidChests || 0).toLocaleString()}</td>
 						<td>${escapeHtml(formatDate(entry.lastEntry))}</td>
@@ -642,13 +656,49 @@
 				document.getElementById('qualifiedCount').textContent = leaderboard.length.toString();
 			} catch (error) {
 				console.error('Failed to load competition leaderboard:', error);
-				tbody.innerHTML = `<tr><td colspan="5" class="empty">Failed to load data: ${escapeHtml(error.message)}</td></tr>`;
+				tbody.innerHTML = `<tr><td colspan="6" class="empty">Failed to load data: ${escapeHtml(error.message)}</td></tr>`;
 			}
 		}
 
 		document.addEventListener('DOMContentLoaded', () => {
 			loadCompetitionLeaderboard();
+			startResetCountdown();
 		});
+
+		function startResetCountdown() {
+			const countdownEl = document.getElementById('resetCountdown');
+			const noticeTextEl = document.getElementById('competition-notice-text');
+			if (!noticeTextEl) return;
+
+			const startMs = new Date(COMPETITION_START_UTC).getTime();
+			const endMs = startMs + COMPETITION_DURATION_HOURS * 3600 * 1000;
+
+			function formatCountdown(ms) {
+				if (ms <= 0) return '00:00:00';
+				const totalSec = Math.floor(ms / 1000);
+				const h = Math.floor(totalSec / 3600);
+				const m = Math.floor((totalSec % 3600) / 60);
+				const s = totalSec % 60;
+				return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+			}
+
+			function update() {
+				const now = Date.now();
+				if (now < startMs) {
+					const ms = startMs - now;
+					noticeTextEl.innerHTML = `A new competition starts at reset — in <strong id="resetCountdown">${formatCountdown(ms)}</strong>`;
+				} else if (now < endMs) {
+					const ms = endMs - now;
+					noticeTextEl.innerHTML = `🏆 Competition is live! Ends in <strong id="resetCountdown">${formatCountdown(ms)}</strong>`;
+				} else {
+					noticeTextEl.innerHTML = 'This competition has concluded. The results shown below are the final results.';
+					clearInterval(intervalId);
+				}
+			}
+
+			update();
+			const intervalId = setInterval(update, 1000);
+		}
 	</script>
 	<script>
 		document.addEventListener('DOMContentLoaded', function() {
