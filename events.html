@@ -749,16 +749,8 @@
       <!-- MANAGE EVENTS TAB -->
       <div id="manageTab" class="tab-content active">
         <h3 style="margin:0 0 12px 0;">All Events</h3>
-        <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; align-items:center;">
+        <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap; align-items:center;">
           <button class="btn" onclick="EventsTab.loadEvents()">🔄 Refresh</button>
-          <button class="btn" id="generateEventsBtn" onclick="EventsTab.generateEvents()" style="background:#4CAF50;">📅 Generate Upcoming Events</button>
-          <select id="generateDaysSelect" style="padding:8px; border-radius:4px; border:1px solid #444; background:#3a3a4e; color:#e0e0e0; font-size:13px;">
-            <option value="7">Next 7 days</option>
-            <option value="14">Next 14 days</option>
-            <option value="30" selected>Next 30 days</option>
-            <option value="60">Next 60 days</option>
-          </select>
-          <span id="generateStatus" style="font-size:13px;"></span>
         </div>
         <div class="table-container">
           <div id="eventsLoading" class="loading"><div class="spinner"></div><p>Loading events...</p></div>
@@ -830,6 +822,38 @@
         </div>
         <div class="form-grid"><div><label for="eventStartDate">Start Date</label><input type="date" id="eventStartDate"></div><div><label for="eventEndDate">End Date</label><input type="date" id="eventEndDate"></div></div>
         <button class="btn" onclick="EventsTab.submitCreateEvent()">🎯 Create Event</button><div id="createStatus" class="status"></div>
+
+        <hr style="border:none; border-top:1px solid #c0c4d8; margin:24px 0;">
+        <h3 style="margin:0 0 12px 0;">📅 Generate Upcoming Events from Calendar</h3>
+        <p style="margin-bottom:12px; color:#6c5ce7; font-size:13px;">Automatically create events based on the recurring calendar schedule.</p>
+        <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap; align-items:center;">
+          <button class="btn" id="generateEventsBtn" onclick="EventsTab.generateEvents()" style="background:#4CAF50;">📅 Generate Events</button>
+          <select id="generateDaysSelect" style="padding:8px; border-radius:4px; border:1px solid #c0c4d8; background:#f0f2f5; color:#2c2f45; font-size:13px;">
+            <option value="7">Next 7 days</option>
+            <option value="14">Next 14 days</option>
+            <option value="30" selected>Next 30 days</option>
+            <option value="60">Next 60 days</option>
+          </select>
+        </div>
+        <div style="margin-bottom:12px; padding:8px 12px; background:#f0f2f5; border-radius:6px; border:1px solid #c0c4d8;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+            <span style="font-size:12px; color:#555; font-weight:600;">Generate for:</span>
+            <label style="font-size:11px; color:#777; cursor:pointer;"><input type="checkbox" id="genSelectAll" checked onchange="EventsTab.toggleAllGenTypes(this.checked)"> All</label>
+          </div>
+          <div id="genEventTypes" style="display:flex; flex-wrap:wrap; gap:4px 12px;">
+            <label style="font-size:12px; color:#2c2f45; cursor:pointer;"><input type="checkbox" class="gen-type-cb" value="Active Period" checked> Active Period</label>
+            <label style="font-size:12px; color:#2c2f45; cursor:pointer;"><input type="checkbox" class="gen-type-cb" value="Ancients Towers" checked> Ancients Towers</label>
+            <label style="font-size:12px; color:#2c2f45; cursor:pointer;"><input type="checkbox" class="gen-type-cb" value="Ancients - Tin Man" checked> Ancients - Tin Man</label>
+            <label style="font-size:12px; color:#2c2f45; cursor:pointer;"><input type="checkbox" class="gen-type-cb" value="Ragnarok" checked> Ragnarok</label>
+            <label style="font-size:12px; color:#2c2f45; cursor:pointer;"><input type="checkbox" class="gen-type-cb" value="Ragnarok Points" checked> Ragnarok Points</label>
+            <label style="font-size:12px; color:#2c2f45; cursor:pointer;"><input type="checkbox" class="gen-type-cb" value="Dark Omens Event" checked> Dark Omens Event</label>
+            <label style="font-size:12px; color:#2c2f45; cursor:pointer;"><input type="checkbox" class="gen-type-cb" value="Olympus" checked> Olympus</label>
+            <label style="font-size:12px; color:#2c2f45; cursor:pointer;"><input type="checkbox" class="gen-type-cb" value="Hermes' Chests" checked> Hermes' Chests</label>
+            <label style="font-size:12px; color:#2c2f45; cursor:pointer;"><input type="checkbox" class="gen-type-cb" value="Olympus Tartarus" checked> Olympus Tartarus</label>
+            <label style="font-size:12px; color:#2c2f45; cursor:pointer;"><input type="checkbox" class="gen-type-cb" value="Senator Rank" checked> Senator Rank</label>
+          </div>
+        </div>
+        <div style="margin-bottom:12px;"><span id="generateStatus" style="font-size:13px;"></span></div>
       </div>
 
       <!-- EVENT TYPES TAB -->
@@ -2037,10 +2061,20 @@
         }).catch(error => { alert('Error: ' + error.message); });
       }
 
+      function toggleAllGenTypes(checked) {
+        document.querySelectorAll('.gen-type-cb').forEach(cb => cb.checked = checked);
+      }
+
       function generateEvents() {
         const btn = document.getElementById('generateEventsBtn');
         const status = document.getElementById('generateStatus');
         const daysAhead = document.getElementById('generateDaysSelect').value;
+        const selectedTypes = Array.from(document.querySelectorAll('.gen-type-cb:checked')).map(cb => cb.value);
+        if (selectedTypes.length === 0) {
+          status.textContent = '⚠️ Please select at least one event type.';
+          status.style.color = '#ffb300';
+          return;
+        }
         btn.disabled = true;
         btn.textContent = '⏳ Generating...';
         status.textContent = '';
@@ -2048,7 +2082,7 @@
         fetch(window.GAS_WEB_APP_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'generateCalendarEvents', daysAhead: Number(daysAhead) })
+          body: JSON.stringify({ action: 'generateCalendarEvents', daysAhead: Number(daysAhead), eventTypes: selectedTypes })
         })
         .then(res => res.json())
         .then(result => {
@@ -2096,7 +2130,7 @@
         }
       }
 
-      return { init, switchTab, loadEvents, generateEvents, onChestEventSelected, onManualEventSelected, onTroopEventSelected, submitManualEntry, submitTroopEntry, calculateManualNonParticipants, calculateTroopNonParticipants, calculateChestParticipation, submitCreateEvent, updateEventTypeMethod, submitAddEventType, renderEventTypesTable, cancelEditEventType, addTroopTargetRow, removeTroopTargetRow, editEventType, editEvent, deleteEvent, deleteEventType, viewEventParticipation, sortTable, sortManualTable };
+      return { init, switchTab, loadEvents, generateEvents, toggleAllGenTypes, onChestEventSelected, onManualEventSelected, onTroopEventSelected, submitManualEntry, submitTroopEntry, calculateManualNonParticipants, calculateTroopNonParticipants, calculateChestParticipation, submitCreateEvent, updateEventTypeMethod, submitAddEventType, renderEventTypesTable, cancelEditEventType, addTroopTargetRow, removeTroopTargetRow, editEventType, editEvent, deleteEvent, deleteEventType, viewEventParticipation, sortTable, sortManualTable };
     })();
   </script>
 </body>
